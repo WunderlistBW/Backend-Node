@@ -15,7 +15,7 @@ describe("utils", () => {
   });
   describe("createToken()", () => {
     it("should create a valid token with no password stored", () => {
-      const myToken = createToken({ id, username });
+      const myToken = createToken({ id, username, name: "Brandon" });
       jwt.verify(myToken, "wrong secret", (err, decodedToken) => {
         expect(err.message).toBe("invalid signature");
       });

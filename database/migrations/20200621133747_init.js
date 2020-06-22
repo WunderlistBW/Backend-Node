@@ -1,14 +1,14 @@
 exports.up = function (knex) {
   return knex.schema
-    .createTable("categories", (t) => {
+    .createTable("tags", (t) => {
       t.increments();
       t.string("name", 256).unique().notNullable().index();
     })
     .createTable("users", (t) => {
       t.increments();
-      t.string("name", 256).notNullable();
       t.string("username", 256).notNullable().unique().index();
-      t.string("email", 256).notNullable().unique().index();
+      t.string("name", 256);
+      t.string("email", 256).unique();
       t.string("password", 256).notNullable();
     })
     .createTable("tasks", (t) => {
@@ -34,7 +34,7 @@ exports.up = function (knex) {
         .onUpdate("CASCADE")
         .onDelete("RESTRICT");
     })
-    .createTable("tasks_categories", (t) => {
+    .createTable("tasks_tags", (t) => {
       t.increments();
       t.integer("task_id")
         .notNullable()
@@ -45,7 +45,7 @@ exports.up = function (knex) {
       t.integer("category_id")
         .notNullable()
         .unsigned()
-        .references("categories.id")
+        .references("tags.id")
         .onUpdate("CASCADE")
         .onDelete("RESTRICT");
     });
@@ -53,9 +53,9 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
   return knex.schema
-    .dropTablesIfExists("tasks_categories")
+    .dropTableIfExists("tasks_tags")
     .dropTableIfExists("users_tasks")
     .dropTableIfExists("tasks")
     .dropTableIfExists("users")
-    .dropTableIfExists("categories");
+    .dropTableIfExists("tags");
 };

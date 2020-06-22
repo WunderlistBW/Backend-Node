@@ -13,7 +13,9 @@ server.use(express.json());
 
 // Custom Routers
 const authRouter = require("../auth/authRouter");
+const taskRouter = require("../tasks/taskRouter");
 server.use("/api/auth", authRouter);
+server.use("/api/tasks", taskRouter);
 
 // Test Endpoint
 server.get("/", (req, res) => {
