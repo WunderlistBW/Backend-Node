@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const authMiddleware = require("../auth/authMiddleware");
 
 // Server Creation
 const server = express();
@@ -15,7 +16,7 @@ server.use(express.json());
 const authRouter = require("../auth/authRouter");
 const taskRouter = require("../tasks/taskRouter");
 server.use("/api/auth", authRouter);
-server.use("/api/tasks", taskRouter);
+server.use("/api/tasks", authMiddleware, taskRouter);
 
 // Test Endpoint
 server.get("/", (req, res) => {

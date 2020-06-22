@@ -15,9 +15,13 @@ exports.up = function (knex) {
       t.increments();
       t.string("name", 255).notNullable();
       t.string("dueDate", 24);
-      t.boolean("isRecurring");
-      t.integer("dayOfWeek");
       t.boolean("completed");
+      t.integer("user_id")
+        .notNullable()
+        .unsigned()
+        .references("users.id")
+        .onUpdate("CASCADE")
+        .onDelete("CASCADE");
     })
     .createTable("users_tasks", (t) => {
       t.increments();
@@ -26,13 +30,13 @@ exports.up = function (knex) {
         .unsigned()
         .references("users.id")
         .onUpdate("CASCADE")
-        .onDelete("RESTRICT");
+        .onDelete("CASCADE");
       t.integer("task_id")
         .notNullable()
         .unsigned()
         .references("tasks.id")
         .onUpdate("CASCADE")
-        .onDelete("RESTRICT");
+        .onDelete("CASCADE");
     })
     .createTable("tasks_tags", (t) => {
       t.increments();
@@ -41,7 +45,7 @@ exports.up = function (knex) {
         .unsigned()
         .references("tasks.id")
         .onUpdate("CASCADE")
-        .onDelete("RESTRICT");
+        .onDelete("CASCADE");
       t.integer("category_id")
         .notNullable()
         .unsigned()
