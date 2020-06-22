@@ -3,11 +3,13 @@ const server = require("../api/server");
 
 const Tasks = require("./taskModel");
 const db = require("../database/dbConfig");
+const { set } = require("../api/server");
 
 let myToken;
 const username = "brandon",
   password = "myNewPass";
 const task = { name: "Take out trash", user_id: 1 };
+const taskUpdates = { completed: true, name: "Take out trash and recycling" };
 
 describe("/api/tasks", () => {
   beforeAll(async () => {
@@ -45,6 +47,7 @@ describe("/api/tasks", () => {
         .set({ Authorization: myToken });
       expect(res.status).toBe(200);
       expect(res.body.name).toEqual(task.name);
+      expect(res.body.completed).toBeFalsy();
     });
     it("should pass back a 400 if data passed in isn't valid", async () => {
       const res = await request(server)
@@ -58,6 +61,69 @@ describe("/api/tasks", () => {
         .set({ Authorization: myToken })
         .send({ ...task, user_id: 2 });
       expect(res.status).toBe(500);
+    });
+  });
+  describe("PUT /:id", () => {
+    it("should successfully update a task", async () => {
+      let res = await request(server)
+        .put("/api/tasks/1")
+        .set({ Authorization: myToken })
+        .send(taskUpdates);
+      expect(res.status).toBe(204);
+      res = await request(server)
+        .get("/api/tasks/1")
+        .set({ Authorization: myToken });
+      expect(res.status).toBe(200);
+      expect(res.body.name).toBe(taskUpdates.name);
+      expect(res.body.completed).toBeTruthy();
+    });
+    it("should return a 400 if no or invalid changes are passed", async () => {
+      let res = await request(server)
+        .put("/api/tasks/1")
+        .set({ Authorization: myToken });
+      expect(res.status).toBe(400);
+      res = await request(server)
+        .put("/api/tasks/1")
+        .send({ something: "wrong" })
+        .set({ Authorization: myToken });
+      expect(res.status).toBe(400);
+    });
+    it("should return a 404 if task_id is invalid", async () => {
+      const res = await request(server)
+        .put("/api/tasks/2")
+        .send(taskUpdates)
+        .set({ Authorization: myToken });
+      expect(res.status).toBe(404);
+    });
+  });
+  describe("GET /", () => {
+    // returns all of a users tasks in an array
+    it("should get all tasks for a user", async () => {
+      const {
+        body: [taskFromDb],
+      } = await request(server)
+        .get("/api/tasks")
+        .set({ Authorization: myToken });
+      expect(taskFromDb.name).toBe(taskUpdates.name);
+    });
+  });
+  describe("DELETE /:id", () => {
+    it("should successfully delete a task", async () => {
+      let res = await request(server)
+        .delete("/api/tasks/1")
+        .set({ Authorization: myToken });
+      expect(res.status).toBe(204);
+      res = await request(server)
+        .get("/api/tasks/1")
+        .set({ Authorization: myToken });
+      expect(res.status).toBe(200);
+      expect(res.body).toBeFalsy();
+    });
+    it("should pass 404 if task_id is invalid", async () => {
+      const res = await request(server)
+        .delete("/api/tasks/1")
+        .set({ Authorization: myToken });
+      expect(res.status).toBe(404);
     });
   });
 });

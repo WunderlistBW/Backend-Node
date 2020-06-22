@@ -18,13 +18,18 @@ function getTask(id) {
 }
 function getByUserId(id) {
   // Update this after implementing tags
-  return null;
+  return db("tasks AS T")
+    .join("users AS U", "T.user_id", "U.id")
+    .select("T.id", "T.name", "T.dueDate", "T.completed")
+    .where("U.id", id)
+    .orderBy("T.completed")
+    .orderBy("T.id");
 }
 function update(task_id, changes) {
-  return db("tasks");
+  return db("tasks").where({ id: task_id }).update(changes);
 }
 function remove(task_id) {
-  return db("tasks");
+  return db("tasks").where({ id: task_id }).del();
 }
 // Stretch Goals
 function addTag(task_id, tag_id) {
