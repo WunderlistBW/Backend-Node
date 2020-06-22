@@ -16,14 +16,12 @@ Users
 
 Tasks
 
-| Field Name  | Data Constraints                                     |
-| ----------- | ---------------------------------------------------- |
-| id          | integer, primary key, auto                           |
-| name        | name, required                                       |
-| dueDate     | date, not required, format `YYYY-MM-DD HH:MM:SS:SSS` |
-| isRecurring | boolean, not required                                |
-| dayOfWeek   | integer, not required (0 for Sunday, 6 for Saturday) |
-| user_id     | reference to a valid user id                         |
+| Field Name | Data Constraints                                     |
+| ---------- | ---------------------------------------------------- |
+| id         | integer, primary key, auto                           |
+| name       | name, required                                       |
+| dueDate    | date, not required, format `YYYY-MM-DD HH:MM:SS:SSS` |
+| user_id    | reference to a valid user id                         |
 
 - Users can have an umlimited number of tasks
 - Tasks can be assigned an unlimited number of tags
@@ -41,6 +39,7 @@ User Endpoints
 
 Task Endpoints
 
+- Repeated task are not yet implemented - they'll be in a later version if we decide to do them at all
 - all task endpoints require a valid token be passed in Authorization header
 - the endpoint at GET /api/tasks is intended to be used to load initial application state, and will return an array of all tasks related to a user
 - tasks will be sent to the client in the following format:
@@ -50,10 +49,8 @@ Task: {
     id,
     name,
     dueDate,
-    isRecurring,
-    dayOfWeek,
     completed,
-    tags: [ array of tag IDs ] (Stretch Goals)
+    tags: [ array of tag IDs ] (This is not implemented)
   }
 ```
 
@@ -65,7 +62,7 @@ Task: {
 | PUT /api/tasks/:id    | update a task with id :id | `{ task changes }` | empty on success        | 204          |
 | DELETE /api/tasks/:id | delete a task             | N/A                | empty on success        | 204          |
 
-Tags (More Stretch Goals)
+Tags (More Stretch Goals, NTO IMPLEMENTED)
 
 | Endpoint                           | Purpose                       | Expected Body | Success Response | Success Code |
 | ---------------------------------- | ----------------------------- | ------------- | ---------------- | ------------ |
