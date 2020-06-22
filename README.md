@@ -23,6 +23,7 @@ Tasks
 | dueDate     | date, not required, format `YYYY-MM-DD HH:MM:SS:SSS` |
 | isRecurring | boolean, not required                                |
 | dayOfWeek   | integer, not required (0 for Sunday, 6 for Saturday) |
+| user_id     | reference to a valid user id                         |
 
 - Users can have an umlimited number of tasks
 - Tasks can be assigned an unlimited number of tags
@@ -52,7 +53,7 @@ Task: {
     isRecurring,
     dayOfWeek,
     completed,
-    tags: [ array of tag IDs ]
+    tags: [ array of tag IDs ] (Stretch Goals)
   }
 ```
 
@@ -64,7 +65,7 @@ Task: {
 | PUT /api/tasks/:id    | update a task with id :id | `{ task changes }` | empty on success        | 204          |
 | DELETE /api/tasks/:id | delete a task             | N/A                | empty on success        | 204          |
 
-Tags (Probably Stretch Goals)
+Tags (More Stretch Goals)
 
 | Endpoint                           | Purpose                       | Expected Body | Success Response | Success Code |
 | ---------------------------------- | ----------------------------- | ------------- | ---------------- | ------------ |
