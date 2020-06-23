@@ -16,12 +16,12 @@ Users
 
 Tasks
 
-| Field Name | Data Constraints                                     |
-| ---------- | ---------------------------------------------------- |
-| id         | integer, primary key, auto                           |
-| name       | name, required                                       |
-| dueDate    | date, not required, format `YYYY-MM-DD HH:MM:SS:SSS` |
-| user_id    | reference to a valid user id                         |
+| Field Name | Data Constraints                                                |
+| ---------- | --------------------------------------------------------------- |
+| id         | integer, primary key, auto                                      |
+| name       | name, required                                                  |
+| dueDate    | date, not required, format `YYYY-MM-DD HH:MM:SS:SSS` (ISO 8601) |
+| user_id    | reference to a valid user id                                    |
 
 - Users can have an umlimited number of tasks
 - Tasks can be assigned an unlimited number of tags
@@ -48,21 +48,34 @@ Task Endpoints
 Task: {
     id,
     name,
-    dueDate,
-    completed,
-    tags: [ array of tag IDs ] (This is not implemented)
+    dueDate, // Can be null
+    completed, // Can be null, returns 1 instead of true
+    tags: [ /*array of tag IDs*/ ] // This is not implemented
   }
 ```
 
-| Endpoint              | Purpose                   | Expected Body      | Success Response        | Success Code |
-| --------------------- | ------------------------- | ------------------ | ----------------------- | ------------ |
-| GET /api/tasks        | load a user's tasks       | N/A                | Array of a user's tasks | 200          |
-| POST /api/tasks       | add a new task            | `{ new task }`     | `{ id }` of new task    | 201          |
-| GET /api/tasks/:id    | get task with id :id      | N/A                | task object             | 200          |
-| PUT /api/tasks/:id    | update a task with id :id | `{ task changes }` | empty on success        | 204          |
-| DELETE /api/tasks/:id | delete a task             | N/A                | empty on success        | 204          |
+| Endpoint              | Purpose                   | Success Response        | Success Code |
+| --------------------- | ------------------------- | ----------------------- | ------------ |
+| GET /api/tasks        | load a user's tasks       | Array of a user's tasks | 200          |
+| POST /api/tasks       | add a new task            | `{ id }` of new task    | 201          |
+| GET /api/tasks/:id    | get task with id :id      | task object             | 200          |
+| PUT /api/tasks/:id    | update a task with id :id | empty on success        | 204          |
+| DELETE /api/tasks/:id | delete a task             | empty on success        | 204          |
 
-Tags (More Stretch Goals, NTO IMPLEMENTED)
+Task POST expected body
+
+```js
+{
+  name, // String, required
+    dueDate, // ISO 8601 DATETIME, not required
+    isRepeated, // Boolean, not required
+    // If isRepeated is true, the following ARE required
+    repeatOn, // Integer, 0: Sunday - 6:Saturday, not required
+    repeatUntil; // ISO 8601 DATETIME, not required
+}
+```
+
+Tags (More Stretch Goals, NOT IMPLEMENTED)
 
 | Endpoint                           | Purpose                       | Expected Body | Success Response | Success Code |
 | ---------------------------------- | ----------------------------- | ------------- | ---------------- | ------------ |
