@@ -14,6 +14,7 @@ router.get("/", async (req, res) => {
 router.post("/", taskParser, async (req, res) => {
   const { body: newTask } = req;
   if (isValidTask(newTask)) {
+    const { name, dueDate } = req.body;
     try {
       const [task_id] = await Tasks.add(newTask);
       res.status(201).json({ task_id });
@@ -77,7 +78,7 @@ function isValidTaskUpdate(changes) {
 function taskParser(req, res, next) {
   const { id } = req.decodedToken;
   const { name } = req.body;
-  req.body = { ...req.body, user_id: id };
+  req.body = { name, user_id: id };
 
   if (req.body.isRecurring) {
     if (req.body.repeatOn && req.body.repeatUntil) {
