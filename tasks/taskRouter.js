@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Tasks = require("./taskModel");
+const { getNextDay } = require("../utils");
 
 router.get("/", async (req, res) => {
   const { id } = req.decodedToken;
@@ -16,8 +17,8 @@ router.post("/", taskParser, async (req, res) => {
   if (isValidTask(newTask)) {
     const { name, dueDate } = req.body;
     try {
-      const [task_id] = await Tasks.add(newTask);
-      res.status(201).json({ task_id });
+      const resData = await Tasks.add(newTask);
+      res.status(201).json(resData);
     } catch (e) {
       res.status(500).json({ message: "Unable to complete your request" });
     }
@@ -82,10 +83,19 @@ function taskParser(req, res, next) {
   if (req.body.isRepeated) {
     if (req.body.endOn) {
       // Create an array of objects with the proper due date
-      /**
-       *
-       */
-      req.body = { name, user_id: id };
+      let newReqBody = [];
+
+      const { endOn, isRepeated, days } = req.body;
+      const dateHelper = new Date();
+      const myTask = {
+        name,
+        user_id: id,
+        dueDate: getNextDay(days).format("YYYY-MM-DD HH:MM:SS:SSZ"),
+      };
+      newReqBody.push(myTask);
+
+      console.log(req.body);
+      req.body = newReqBody;
     }
   } else {
     req.body = { name, user_id: id };

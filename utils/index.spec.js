@@ -1,5 +1,6 @@
-const { createToken, isValid } = require("./index");
+const { createToken, isValid, getNextDay } = require("./index");
 const jwt = require("jsonwebtoken");
+const moment = require("moment");
 const { jwt_secret } = require("../config/constants");
 
 const username = "brandon",
@@ -24,6 +25,27 @@ describe("utils", () => {
         expect(decodedToken.id).toBe(id);
         expect(decodedToken.password).toBeUndefined();
       });
+    });
+  });
+  describe("getNextDay()", () => {
+    const dateHelper = new Date();
+    it("should return a moment", () => {
+      expect(moment.isMoment(getNextDay(2, false))).toBe(true);
+    });
+    it("should return today or a date after today", () => {
+      expect(
+        getNextDay(2, false).isSameOrAfter(moment(dateHelper.getDate()))
+      ).toBeTruthy();
+    });
+    it("should return same day correctly", () => {
+      expect(getNextDay(dateHelper.getDay(), false).date()).toBe(
+        dateHelper.getDate()
+      );
+    });
+    it("should return a week from now with no flag passed", () => {
+      expect(getNextDay(dateHelper.getDay()).date()).toBe(
+        dateHelper.getDate() + 7
+      );
     });
   });
 });

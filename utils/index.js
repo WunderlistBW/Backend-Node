@@ -1,8 +1,10 @@
 const jwt = require("jsonwebtoken");
+const moment = require("moment");
 const { jwt_secret } = require("../config/constants");
 module.exports = {
   createToken,
   isValid,
+  getNextDay,
 };
 
 function createToken(user) {
@@ -18,4 +20,14 @@ function isValid(user) {
   return Boolean(
     user.username && user.password && typeof user.password === "string"
   );
+}
+
+function getNextDay(day, excludeToday = true, refDate = new Date()) {
+  if (day < 0 || day > 6) return moment(refDate);
+  refDate.setDate(
+    refDate.getDate() +
+      (!!excludeToday + ((day + 7 - refDate.getDay() - !!excludeToday) % 7))
+  );
+  const date = moment(refDate);
+  return date;
 }
