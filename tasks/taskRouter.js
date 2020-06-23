@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", repeatMiddleware, async (req, res) => {
+router.post("/", taskParser, async (req, res) => {
   const { body: newTask } = req;
   if (isValidTask(newTask)) {
     try {
@@ -74,6 +74,20 @@ function isValidTask(changes) {
 function isValidTaskUpdate(changes) {
   return Boolean(changes.name || changes.dueDate || changes.completed);
 }
-function repeatMiddleware(req, res, next) {
+function taskParser(req, res, next) {
+  const { id } = req.decodedToken;
+  const { name } = req.body;
+  req.body = { ...req.body, user_id: id };
+
+  if (req.body.isRecurring) {
+    if (req.body.repeatOn && req.body.repeatUntil) {
+      // Create an array of objects with the proper due date
+      /**
+       * 1. Get current date and time
+       * 2. Parse end date
+       * 3.
+       */
+    }
+  }
   next();
 }
