@@ -2,6 +2,8 @@
 
 Node/Express Version
 
+v2 - Updates to data structures, specifically around tasks
+
 ## Data Structure
 
 Users
@@ -23,6 +25,7 @@ Tasks
 | dueDate    | date, not required, format `YYYY-MM-DD HH:MM:SS:SSS` (ISO 8601) |
 | completed  | boolean, not required, returns 1 if true or null if false       |
 
+- _dueDate is calculated on the server_
 - Users can have an umlimited number of tasks
 - Tasks can be assigned an unlimited number of tags
 
@@ -67,11 +70,10 @@ Task POST expected body
 ```js
 {
   name, // String, required
-    dueDate, // ISO 8601 DATETIME, not required
     isRepeated, // Boolean, not required
     // If isRepeated is true, the following ARE required
-    repeatOn, // Integer, 0: Sunday - 6:Saturday, not required
-    repeatUntil; // ISO 8601 DATETIME, not required
+    days, // Integer, 0: Sunday - 6:Saturday, not required
+    endOn; // ISO 8601 DATETIME, not required
 }
 ```
 
