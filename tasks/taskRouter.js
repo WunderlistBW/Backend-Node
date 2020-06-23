@@ -78,17 +78,17 @@ function isValidTaskUpdate(changes) {
 function taskParser(req, res, next) {
   const { id } = req.decodedToken;
   const { name } = req.body;
-  req.body = { name, user_id: id };
 
-  if (req.body.isRecurring) {
-    if (req.body.repeatOn && req.body.repeatUntil) {
+  if (req.body.isRepeated) {
+    if (req.body.endOn) {
       // Create an array of objects with the proper due date
       /**
-       * 1. Get current date and time
-       * 2. Parse end date
-       * 3.
+       *
        */
+      req.body = { name, user_id: id };
     }
+  } else {
+    req.body = { name, user_id: id };
   }
   next();
 }
