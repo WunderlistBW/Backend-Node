@@ -55,13 +55,6 @@ describe("/api/tasks", () => {
         .set({ Authorization: myToken });
       expect(res.status).toBe(400);
     });
-    it("should return a 500 if user_id doesn't exist", async () => {
-      const res = await request(server)
-        .post("/api/tasks")
-        .set({ Authorization: myToken })
-        .send({ ...task, user_id: 2 });
-      expect(res.status).toBe(500);
-    });
   });
   describe("PUT /:id", () => {
     it("should successfully update a task", async () => {
