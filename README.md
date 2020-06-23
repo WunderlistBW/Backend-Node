@@ -21,6 +21,7 @@ Tasks
 | id         | integer, primary key, auto                                      |
 | name       | name, required                                                  |
 | dueDate    | date, not required, format `YYYY-MM-DD HH:MM:SS:SSS` (ISO 8601) |
+| completed  | boolean, not required, returns 1 if true or null if false       |
 | user_id    | reference to a valid user id                                    |
 
 - Users can have an umlimited number of tasks

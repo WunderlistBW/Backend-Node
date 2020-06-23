@@ -5,13 +5,13 @@ router.get("/", async (req, res) => {
   const { id } = req.decodedToken;
   try {
     const tasks = await Tasks.getByUserId(id);
-    res.status(200).json(tasks)
+    res.status(200).json(tasks);
   } catch (e) {
     res.status(500).json({ message: "Unable to complete your request" });
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", repeatMiddleware, async (req, res) => {
   const { body: newTask } = req;
   if (isValidTask(newTask)) {
     try {
@@ -73,4 +73,7 @@ function isValidTask(changes) {
 }
 function isValidTaskUpdate(changes) {
   return Boolean(changes.name || changes.dueDate || changes.completed);
+}
+function repeatMiddleware(req, res, next) {
+  next();
 }
