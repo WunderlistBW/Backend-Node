@@ -1,5 +1,5 @@
 exports.seed = function (knex) {
-  return knex("table_name").insert([
+  return knex("tasks").insert([
     {
       name: "Clean",
       completed: false,
