@@ -28,23 +28,21 @@ describe("utils", () => {
     });
   });
   describe("getNextDay()", () => {
-    const dateHelper = new Date();
+    const dateHelper = moment();
     it("should return a moment", () => {
       expect(moment.isMoment(getNextDay(2, false))).toBe(true);
     });
     it("should return today or a date after today", () => {
-      expect(
-        getNextDay(2, false).isSameOrAfter(moment(dateHelper.getDate()))
-      ).toBeTruthy();
+      expect(getNextDay(2, false).isSameOrAfter(moment(dateHelper))).toBe(true);
     });
     it("should return same day correctly", () => {
-      expect(getNextDay(dateHelper.getDay(), false).date()).toBe(
-        dateHelper.getDate()
+      expect(getNextDay(dateHelper.day(), false).date()).toBe(
+        dateHelper.date()
       );
     });
     it("should return a week from now with no flag passed", () => {
-      expect(getNextDay(dateHelper.getDay()).date()).toBe(
-        dateHelper.getDate() + 7
+      expect(getNextDay(dateHelper.day()).date()).toBe(
+        dateHelper.add(7, "days").date()
       );
     });
   });

@@ -81,17 +81,15 @@ function taskParser(req, res, next) {
   const momentFormat = "YYYY-MM-DD HH:MM:SS:SSZ";
   const { id } = req.decodedToken;
   const { name } = req.body;
-
-  if (req.body.isRepeated && req.body.endOn) {
+  let newReqBody;
+  if (req.body.isRepeated && req.body.endOn && req.body.days) {
     // Create an array of objects with the proper due date
-    let newReqBody = [];
-    const firstRun = true;
+    newReqBody = [];
     const { endOn, days } = req.body;
     const stopLoop = moment(endOn);
 
     // Set the iterator to the first date after today
     const currentDate = getNextDay(days, false);
-    console.log(currentDate);
     do {
       newReqBody.push({
         name,
@@ -100,10 +98,15 @@ function taskParser(req, res, next) {
       });
       currentDate.add(7, "days");
     } while (currentDate.isSameOrBefore(stopLoop));
-
-    req.body = newReqBody;
   } else {
-    req.body = { name, user_id: id };
+    newReqBody = {};
+    if (req.body.days)
+      newReqBody.dueDate = getNextDay(req.body.days, false).format(
+        momentFormat
+      );
+    newReqBody.name = name;
+    newReqBody.user_id = id;
   }
+  req.body = newReqBody;
   next();
 }

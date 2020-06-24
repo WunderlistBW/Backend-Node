@@ -22,12 +22,11 @@ function isValid(user) {
   );
 }
 
-function getNextDay(day, excludeToday = true, refDate = new Date()) {
-  if (day < 0 || day > 6) return moment(refDate);
-  refDate.setDate(
-    refDate.getDate() +
-      (!!excludeToday + ((day + 7 - refDate.getDay() - !!excludeToday) % 7))
+function getNextDay(day, excludeToday = true, refDate = moment()) {
+  if (day < 0 || day > 6) return refDate;
+  refDate.add(
+    !!excludeToday + ((day + 7 - refDate.day() - !!excludeToday) % 7),
+    "days"
   );
-  const date = moment(refDate);
-  return date;
+  return refDate;
 }

@@ -1,9 +1,7 @@
 const request = require("supertest");
 const server = require("../api/server");
 
-const Tasks = require("./taskModel");
 const db = require("../database/dbConfig");
-const { set } = require("../api/server");
 
 let myToken;
 const username = "brandon",
@@ -133,7 +131,6 @@ describe("/api/tasks", () => {
       res = await request(server)
         .get("/api/tasks")
         .set({ Authorization: myToken });
-      console.log(res.body);
     });
   });
 });
