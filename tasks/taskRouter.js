@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const Tasks = require("./taskModel");
+const { getNextDay } = require("../utils");
+const moment = require("moment");
 
 router.get("/", async (req, res) => {
   const { id } = req.decodedToken;
@@ -16,8 +18,8 @@ router.post("/", taskParser, async (req, res) => {
   if (isValidTask(newTask)) {
     const { name, dueDate } = req.body;
     try {
-      const [task_id] = await Tasks.add(newTask);
-      res.status(201).json({ task_id });
+      const resData = await Tasks.add(newTask);
+      res.status(201).json(resData);
     } catch (e) {
       res.status(500).json({ message: "Unable to complete your request" });
     }
@@ -70,25 +72,41 @@ router.delete("/:task_id", async (req, res) => {
 module.exports = router;
 
 function isValidTask(changes) {
-  return Boolean(changes.name && changes.user_id);
+  return Boolean(changes.name && changes.user_id) || Array.isArray(changes);
 }
 function isValidTaskUpdate(changes) {
   return Boolean(changes.name || changes.dueDate || changes.completed);
 }
 function taskParser(req, res, next) {
+  const momentFormat = "YYYY-MM-DD HH:MM:SS:SSZ";
   const { id } = req.decodedToken;
   const { name } = req.body;
+  let newReqBody;
+  if (req.body.isRepeated && req.body.endOn && req.body.days) {
+    // Create an array of objects with the proper due date
+    newReqBody = [];
+    const { endOn, days } = req.body;
+    const stopLoop = moment(endOn);
 
-  if (req.body.isRepeated) {
-    if (req.body.endOn) {
-      // Create an array of objects with the proper due date
-      /**
-       *
-       */
-      req.body = { name, user_id: id };
-    }
+    // Set the iterator to the first date after today
+    const currentDate = getNextDay(days, false);
+    do {
+      newReqBody.push({
+        name,
+        user_id: id,
+        dueDate: currentDate.format(momentFormat),
+      });
+      currentDate.add(7, "days");
+    } while (currentDate.isSameOrBefore(stopLoop));
   } else {
-    req.body = { name, user_id: id };
+    newReqBody = {};
+    if (req.body.days)
+      newReqBody.dueDate = getNextDay(req.body.days, false).format(
+        momentFormat
+      );
+    newReqBody.name = name;
+    newReqBody.user_id = id;
   }
+  req.body = newReqBody;
   next();
 }

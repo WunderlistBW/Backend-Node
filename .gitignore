@@ -116,5 +116,5 @@ dist
 .pnp.*
 
 # Databases
-./database/test.db3
-./databse/wunderlist.db3
+database/test.db3
+databse/wunderlist.db3

@@ -1,14 +1,12 @@
 const request = require("supertest");
 const server = require("../api/server");
 
-const Tasks = require("./taskModel");
 const db = require("../database/dbConfig");
-const { set } = require("../api/server");
 
 let myToken;
 const username = "brandon",
   password = "myNewPass";
-const task = { name: "Take out trash", user_id: 1 };
+const task = { name: "Take out trash" };
 const taskUpdates = { completed: true, name: "Take out trash and recycling" };
 
 describe("/api/tasks", () => {
@@ -41,7 +39,7 @@ describe("/api/tasks", () => {
         .set({ Authorization: myToken })
         .send(task);
       expect(res.status).toBe(201);
-      expect(res.body).toEqual({ task_id: 1 });
+      // expect(res.body).toEqual({ task_id: 1 });
       res = await request(server)
         .get("/api/tasks/1")
         .set({ Authorization: myToken });
@@ -117,6 +115,22 @@ describe("/api/tasks", () => {
         .delete("/api/tasks/1")
         .set({ Authorization: myToken });
       expect(res.status).toBe(404);
+    });
+  });
+  describe("New task POST - repeated", () => {
+    it("should parse a request into an array of tasks", async () => {
+      let res = await request(server)
+        .post("/api/tasks")
+        .set({ Authorization: myToken })
+        .send({
+          name: task.name,
+          days: 2,
+          isRepeated: true,
+          endOn: "2020-08-24",
+        });
+      res = await request(server)
+        .get("/api/tasks")
+        .set({ Authorization: myToken });
     });
   });
 });

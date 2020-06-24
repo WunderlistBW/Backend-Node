@@ -37,7 +37,7 @@ describe("/api/auth AUTH ROUTER", () => {
         .post(auth("register"))
         .send({ username, password, email, name });
       expect(res.status).toBe(201);
-      expect(res.body).toEqual({ id: 1 });
+      expect(res.body).toHaveProperty("token");
     });
     it("should refuse a request with a duplicate username", async () => {
       const res = await request(server)
