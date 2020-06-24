@@ -22,27 +22,26 @@ Tasks
 | ---------- | --------------------------------------------------------------- |
 | id         | integer, primary key, auto                                      |
 | name       | name, required                                                  |
-| dueDate    | date, not required, format `YYYY-MM-DD HH:MM:SS:SSS` (ISO 8601) |
+| dueDate    | date, auto, format `YYYY-MM-DD HH:MM:SS.SSZ` (ISO 8601)         |
 | completed  | boolean, not required, returns 1 if true or null if false       |
 
-- _dueDate is calculated on the server_
+- _dueDate is calculated on the server when days is passed with a post request_
 - Users can have an umlimited number of tasks
-- Tasks can be assigned an unlimited number of tags
+- Tasks can be assigned an unlimited number of tags (Not implemented)
 
 ## Endpoints
 
-- All error responses will have a message property
+- All error responses will have a `message` property
 
 User Endpoints
 
 | Method | Endpoint URL       | Expected Body            | Success Response |
 | ------ | ------------------ | ------------------------ | ---------------- |
-| POST   | /api/auth/register | `{ username, password }` | `{ id }`         |
+| POST   | /api/auth/register | `{ username, password }` | `{ token }`      |
 | POST   | /api/auth/login    | `{ username, password }` | `{ token }`      |
 
 Task Endpoints
 
-- Repeated task are not yet implemented - they'll be in a later version if we decide to do them at all
 - all task endpoints require a valid token be passed in Authorization header
 - the endpoint at GET /api/tasks is intended to be used to load initial application state, and will return an array of all tasks related to a user
 - tasks will be sent to the client in the following format:
@@ -70,10 +69,10 @@ Task POST expected body
 ```js
 {
   name, // String, required
-    isRepeated, // Boolean, not required
-    // If isRepeated is true, the following ARE required
-    days, // Integer, 0: Sunday - 6:Saturday, not required
-    endOn; // ISO 8601 DATETIME, not required
+  // All 3 of the following values are required for a repeat task to be created
+  isRepeated, // Boolean, not required
+  days, // Integer, 0: Sunday - 6:Saturday, will not generate a dueDate if this is not passed in
+  endOn; // A date string, formatted "YYYY-MM-DD"
 }
 ```
 
