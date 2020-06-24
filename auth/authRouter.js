@@ -1,11 +1,11 @@
 const bc = require("bcryptjs");
 const router = require("express").Router();
 const Users = require("./usersModel");
-const { isValid, createToken } = require("../utils");
+const { isValidUser, createToken } = require("../utils");
 
 router.post("/register", async (req, res) => {
   const { body: newUser } = req;
-  if (isValid(newUser)) {
+  if (isValidUser(newUser)) {
     // hash the password
     const { password } = newUser;
     const rounds = process.env.BCRYPT_ROUNDS || 8;
@@ -25,7 +25,7 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { body: credentials } = req;
-  if (isValid(credentials)) {
+  if (isValidUser(credentials)) {
     const { username, password } = credentials;
     // run query based on passed in username
     try {

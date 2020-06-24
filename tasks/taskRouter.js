@@ -1,7 +1,9 @@
 const router = require("express").Router();
 const Tasks = require("./taskModel");
-const { getNextDay } = require("../utils");
-const moment = require("moment");
+const { isValidTask, isValidTaskUpdate } = require("../utils");
+
+// Middleware to dynamically read in post requests
+const taskParser = require("./taskParser");
 
 router.get("/", async (req, res) => {
   const { id } = req.decodedToken;
@@ -70,43 +72,3 @@ router.delete("/:task_id", async (req, res) => {
 });
 
 module.exports = router;
-
-function isValidTask(changes) {
-  return Boolean(changes.name && changes.user_id) || Array.isArray(changes);
-}
-function isValidTaskUpdate(changes) {
-  return Boolean(changes.name || changes.dueDate || changes.completed);
-}
-function taskParser(req, res, next) {
-  const momentFormat = "YYYY-MM-DD HH:MM:SS:SSZ";
-  const { id } = req.decodedToken;
-  const { name } = req.body;
-  let newReqBody;
-  if (req.body.isRepeated && req.body.endOn && req.body.days) {
-    // Create an array of objects with the proper due date
-    newReqBody = [];
-    const { endOn, days } = req.body;
-    const stopLoop = moment(endOn);
-
-    // Set the iterator to the first date after today
-    const currentDate = getNextDay(days, false);
-    do {
-      newReqBody.push({
-        name,
-        user_id: id,
-        dueDate: currentDate.format(momentFormat),
-      });
-      currentDate.add(7, "days");
-    } while (currentDate.isSameOrBefore(stopLoop));
-  } else {
-    newReqBody = {};
-    if (req.body.days)
-      newReqBody.dueDate = getNextDay(req.body.days, false).format(
-        momentFormat
-      );
-    newReqBody.name = name;
-    newReqBody.user_id = id;
-  }
-  req.body = newReqBody;
-  next();
-}

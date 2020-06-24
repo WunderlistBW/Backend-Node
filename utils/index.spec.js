@@ -1,4 +1,4 @@
-const { createToken, isValid, getNextDay } = require("./index");
+const { createToken, isValidUser, getNextDay } = require("./index");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const { jwt_secret } = require("../config/constants");
@@ -8,10 +8,10 @@ const username = "brandon",
   id = 1;
 
 describe("utils", () => {
-  describe("isValid()", () => {
+  describe("isValidUser()", () => {
     it("should only return true if username and pass are provided", () => {
-      expect(isValid({ username, password })).toBe(true);
-      expect(isValid({ username })).toBe(false);
+      expect(isValidUser({ username, password })).toBe(true);
+      expect(isValidUser({ username })).toBe(false);
     });
   });
   describe("createToken()", () => {
