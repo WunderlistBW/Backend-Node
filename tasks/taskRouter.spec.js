@@ -121,15 +121,18 @@ describe("/api/tasks", () => {
   });
   describe("New task POST - repeated", () => {
     it("should parse a request into an array of tasks", async () => {
-      const res = await request(server)
+      let res = await request(server)
         .post("/api/tasks")
         .set({ Authorization: myToken })
         .send({
           name: task.name,
           days: 2,
           isRepeated: true,
-          endOn: "2020-07-24",
+          endOn: "2020-08-24",
         });
+      res = await request(server)
+        .get("/api/tasks")
+        .set({ Authorization: myToken });
       console.log(res.body);
     });
   });

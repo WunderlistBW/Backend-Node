@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Tasks = require("./taskModel");
 const { getNextDay } = require("../utils");
+const moment = require("moment");
 
 router.get("/", async (req, res) => {
   const { id } = req.decodedToken;
@@ -71,32 +72,36 @@ router.delete("/:task_id", async (req, res) => {
 module.exports = router;
 
 function isValidTask(changes) {
-  return Boolean(changes.name && changes.user_id);
+  return Boolean(changes.name && changes.user_id) || Array.isArray(changes);
 }
 function isValidTaskUpdate(changes) {
   return Boolean(changes.name || changes.dueDate || changes.completed);
 }
 function taskParser(req, res, next) {
+  const momentFormat = "YYYY-MM-DD HH:MM:SS:SSZ";
   const { id } = req.decodedToken;
   const { name } = req.body;
 
-  if (req.body.isRepeated) {
-    if (req.body.endOn) {
-      // Create an array of objects with the proper due date
-      let newReqBody = [];
+  if (req.body.isRepeated && req.body.endOn) {
+    // Create an array of objects with the proper due date
+    let newReqBody = [];
+    const firstRun = true;
+    const { endOn, days } = req.body;
+    const stopLoop = moment(endOn);
 
-      const { endOn, isRepeated, days } = req.body;
-      const dateHelper = new Date();
-      const myTask = {
+    // Set the iterator to the first date after today
+    const currentDate = getNextDay(days, false);
+    console.log(currentDate);
+    do {
+      newReqBody.push({
         name,
         user_id: id,
-        dueDate: getNextDay(days).format("YYYY-MM-DD HH:MM:SS:SSZ"),
-      };
-      newReqBody.push(myTask);
+        dueDate: currentDate.format(momentFormat),
+      });
+      currentDate.add(7, "days");
+    } while (currentDate.isSameOrBefore(stopLoop));
 
-      console.log(req.body);
-      req.body = newReqBody;
-    }
+    req.body = newReqBody;
   } else {
     req.body = { name, user_id: id };
   }
